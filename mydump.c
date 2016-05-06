@@ -52,7 +52,7 @@ void readPackets(char* dev, pcap_t *handler, char* BPFfilters, char* strpattern)
 		char filter_exp[filter_size];
 		strncpy(filter_exp, BPFfilters, filter_size);
 		filter_exp[filter_size] = '\0';
-		printf("filter is : %s\n", filter_exp);
+//		printf("filter is : %s\n", filter_exp);
 		
 		/* Find the properties for the device */
 		if (dev!= NULL && pcap_lookupnet(dev, &net, &mask, errbuf) == -1) {
@@ -111,21 +111,25 @@ void readPackets(char* dev, pcap_t *handler, char* BPFfilters, char* strpattern)
 			struct tm tmobj;
 			tmobj = *localtime(&header->ts.tv_sec);
 			strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", &tmobj);
-    		printf("%s:", buf);
-    		printf("%d ", (int)header->ts.tv_usec);
+//    		printf("%s:", buf);
+//  		printf("%d ", (int)header->ts.tv_usec);
 
-    		printf(" %s ->", ether_ntoa((const struct ether_addr *)&ethernet->ether_shost));
-    		printf(" %s", ether_ntoa((const struct ether_addr *)&ethernet->ether_dhost));
+// 		printf(" %s ->", ether_ntoa((const struct ether_addr *)&ethernet->ether_shost));
+//  		printf(" %s", ether_ntoa((const struct ether_addr *)&ethernet->ether_dhost));
     		int type = ntohs(ethernet->ether_type);
-    		printf(" type 0x%x ", type);
-    		printf(" len %d\n", header->len);
+//    		printf(" type 0x%x ", type);
+//    		printf(" len %d\n", header->len);
 
 
-        	printf("%s -> %s ",  inet_ntoa(ip->ip_src),  inet_ntoa(ip->ip_dst));
-        	print_tp(ip->ip_p);
-        	printf("\n");
-		printf("SRC PORT: %d DST PORT: %d \n", ntohs(tcp->th_sport), ntohs(tcp->th_dport));
-        	if(ip->ip_p == 6){
+//        	printf("%s -> %s ",  inet_ntoa(ip->ip_src),  inet_ntoa(ip->ip_dst));
+//        	print_tp(ip->ip_p);
+//        	printf("\n");
+//		printf("SRC PORT: %d DST PORT: %d \n", ntohs(tcp->th_sport), ntohs(tcp->th_dport));
+		if(ntohs(tcp->th_sport) == 53 || ntohs(tcp->th_dport) == 53){
+			printf("this is a DNS query\n");
+		}
+
+/*		if(ip->ip_p == 6){
 				printf("SEQ: %u ACK: %u\n", ntohl(tcp->th_seq), ntohl(tcp->th_ack));
 				printf("WINDOW SIZE: %d\n", ntohs(tcp->th_win));
 			}
@@ -149,6 +153,7 @@ void readPackets(char* dev, pcap_t *handler, char* BPFfilters, char* strpattern)
 			}
 			 
 			printf("\n\n");
+*/
 		}
    	} 
    	return;
