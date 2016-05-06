@@ -1,0 +1,279 @@
+REPORT
+======
+
+Compile and Run
+---------------
+
+To be performed in root mode.
+
+Command to compile:
+	make
+
+Command to clean:
+	make clean
+
+Command to run:
+	./mydump [-i interface] [-r trace file] [-s string filter] expression
+
+Command to terminate:
+	Kill process - Ctrl+x (linux), cmd + c (mac)
+
+
+Files
+-----
+	mydump.c 	: 	main c program for mydump
+	mydump.h 	: 	header file for mydump.c
+	Makefile 	: 	the makefile for program
+	a.pcap		:	sample network trace file
+	REPORT 		: 	Readme file
+
+Design
+------
+mydump.c program works as following-
+
+1. Extracts the arguments to the program.
+
+2. Passes control to online/offline reading based on argument.
+
+3. Applies BFP filters if supplied.
+
+4. Read packets and prints tcpdump like output. If string filter is provided, then only packets with matching string are printed.
+
+5. The packet read from the libpcap library is stored in buffer. The ethernet packet, ip pcaket and transport layer packet are extraced 	in order.
+
+6. The payload is printed in hex and plaintext format. The non - human-readable characters are replaced with dots.
+
+
+Sample
+------
+
+Command : ./mydump -ra.pcap -spdf tcp
+Output :
+
+	File filter is : a.pcap
+	String filter is : pdf
+	filter is tcp 
+	Capturing Offline
+	filter is : tcp 
+
+	2004-05-13 06:17:11:667488  fe:ff:20:0:1:0 -> 0:0:1:0:0:0 type 0x800  len 1434
+	145.254.160.237 -> 145.254.160.237 TCP
+	SEQ: 290233560 ACK: 951058419
+	SRC PORT: 80 DST PORT: 3372 
+	WINDOW SIZE: 6432
+	PAYLOAD SIZE: 1395
+	L..8...P.. ....w		4c 9c d8 38 af ff f3 50 10 19 20 06 1a 00 00 77 
+	w.suse.com/us/pr		77 2e 73 75 73 65 2e 63 6f 6d 2f 75 73 2f 70 72 
+	ivate/download/f		69 76 61 74 65 2f 64 6f 77 6e 6c 6f 61 64 2f 66 
+	tp/int_mirrors.h		74 70 2f 69 6e 74 5f 6d 69 72 72 6f 72 73 2e 68 
+	tml">Mirrors</a>		74 6d 6c 22 3e 4d 69 72 72 6f 72 73 3c 2f 61 3e 
+	 are also availa		20 61 72 65 20 61 6c 73 6f 20 61 76 61 69 6c 61 
+	ble..</td>.</tr>		62 6c 65 2e 0a 3c 2f 74 64 3e 0a 3c 2f 74 72 3e 
+	.</table>.<p>.  		0a 3c 2f 74 61 62 6c 65 3e 0a 3c 70 3e 0a 20 20 
+	If you know of a		49 66 20 79 6f 75 20 6b 6e 6f 77 20 6f 66 20 61 
+	ny binary distri		6e 79 20 62 69 6e 61 72 79 20 64 69 73 74 72 69 
+	bution not liste		62 75 74 69 6f 6e 20 6e 6f 74 20 6c 69 73 74 65 
+	d here, please s		64 20 68 65 72 65 2c 20 70 6c 65 61 73 65 20 73 
+	end mail.  to.  		65 6e 64 20 6d 61 69 6c 0a 20 20 74 6f 0a 20 20 
+	<a href="mailto:		3c 61 20 68 72 65 66 3d 22 6d 61 69 6c 74 6f 3a 
+	ethereal-web[AT]		65 74 68 65 72 65 61 6c 2d 77 65 62 5b 41 54 5d 
+	ethereal.com">et		65 74 68 65 72 65 61 6c 2e 63 6f 6d 22 3e 65 74 
+	hereal-web[AT]et		68 65 72 65 61 6c 2d 77 65 62 5b 41 54 5d 65 74 
+	hereal.com</a>..		68 65 72 65 61 6c 2e 63 6f 6d 3c 2f 61 3e 0a 2e 
+	.</p>.<p class="		0a 3c 2f 70 3e 0a 3c 70 20 63 6c 61 73 73 3d 22 
+	footnote">.  [1]		66 6f 6f 74 6e 6f 74 65 22 3e 0a 20 20 5b 31 5d 
+	 Each Ethereal p		20 45 61 63 68 20 45 74 68 65 72 65 61 6c 20 70 
+	ackage produced 		61 63 6b 61 67 65 20 70 72 6f 64 75 63 65 64 20 
+	by.  <a href="ht		62 79 0a 20 20 3c 61 20 68 72 65 66 3d 22 68 74 
+	tp://www.thewrit		74 70 3a 2f 2f 77 77 77 2e 74 68 65 77 72 69 74 
+	tenword.com">The		74 65 6e 77 6f 72 64 2e 63 6f 6d 22 3e 54 68 65 
+	 Written Word</a		20 57 72 69 74 74 65 6e 20 57 6f 72 64 3c 2f 61 
+	> depends on the		3e 20 64 65 70 65 6e 64 73 20 6f 6e 20 74 68 65 
+	.  <a href="ftp:		0a 20 20 3c 61 20 68 72 65 66 3d 22 66 74 70 3a 
+	//ftp.thewritten		2f 2f 66 74 70 2e 74 68 65 77 72 69 74 74 65 6e 
+	word.com/package		77 6f 72 64 2e 63 6f 6d 2f 70 61 63 6b 61 67 65 
+	s/by-name/zlib-1		73 2f 62 79 2d 6e 61 6d 65 2f 7a 6c 69 62 2d 31 
+	.1.4/">zlib</a>,		2e 31 2e 34 2f 22 3e 7a 6c 69 62 3c 2f 61 3e 2c 
+	.  <a href="ftp:		0a 20 20 3c 61 20 68 72 65 66 3d 22 66 74 70 3a 
+	//ftp.thewritten		2f 2f 66 74 70 2e 74 68 65 77 72 69 74 74 65 6e 
+	word.com/package		77 6f 72 64 2e 63 6f 6d 2f 70 61 63 6b 61 67 65 
+	s/by-name/glib-1		73 2f 62 79 2d 6e 61 6d 65 2f 67 6c 69 62 2d 31 
+	.2.10/">Glib</a>		2e 32 2e 31 30 2f 22 3e 47 6c 69 62 3c 2f 61 3e 
+	,.  <a href="ftp		2c 0a 20 20 3c 61 20 68 72 65 66 3d 22 66 74 70 
+	://ftp.thewritte		3a 2f 2f 66 74 70 2e 74 68 65 77 72 69 74 74 65 
+	nword.com/packag		6e 77 6f 72 64 2e 63 6f 6d 2f 70 61 63 6b 61 67 
+	es/by-name/gtk+-		65 73 2f 62 79 2d 6e 61 6d 65 2f 67 74 6b 2b 2d 
+	1.2.10/">GTK+</a		31 2e 32 2e 31 30 2f 22 3e 47 54 4b 2b 3c 2f 61 
+	>,.  <a href="ft		3e 2c 0a 20 20 3c 61 20 68 72 65 66 3d 22 66 74 
+	p://ftp.thewritt		70 3a 2f 2f 66 74 70 2e 74 68 65 77 72 69 74 74 
+	enword.com/packa		65 6e 77 6f 72 64 2e 63 6f 6d 2f 70 61 63 6b 61 
+	ges/by-name/perl		67 65 73 2f 62 79 2d 6e 61 6d 65 2f 70 65 72 6c 
+	-5.6.1/">Perl</a		2d 35 2e 36 2e 31 2f 22 3e 50 65 72 6c 3c 2f 61 
+	>, and.  <a href		3e 2c 20 61 6e 64 0a 20 20 3c 61 20 68 72 65 66 
+	="ftp://ftp.thew		3d 22 66 74 70 3a 2f 2f 66 74 70 2e 74 68 65 77 
+	rittenword.com/p		72 69 74 74 65 6e 77 6f 72 64 2e 63 6f 6d 2f 70 
+	ackages/by-name/		61 63 6b 61 67 65 73 2f 62 79 2d 6e 61 6d 65 2f 
+	net-snmp-5.0.9/"		6e 65 74 2d 73 6e 6d 70 2d 35 2e 30 2e 39 2f 22 
+	>Net-SNMP</a>.  		3e 4e 65 74 2d 53 4e 4d 50 3c 2f 61 3e 0a 20 20 
+	packages..  Plea		70 61 63 6b 61 67 65 73 2e 0a 20 20 50 6c 65 61 
+	se refer to The 		73 65 20 72 65 66 65 72 20 74 6f 20 54 68 65 20 
+	Written Word's. 		57 72 69 74 74 65 6e 20 57 6f 72 64 27 73 0a 20 
+	 <a href="ftp://		20 3c 61 20 68 72 65 66 3d 22 66 74 70 3a 2f 2f 
+	ftp.thewrittenwo		66 74 70 2e 74 68 65 77 72 69 74 74 65 6e 77 6f 
+	rd.com/packages/		72 64 2e 63 6f 6d 2f 70 61 63 6b 61 67 65 73 2f 
+	INSTALL.pdf">doc		49 4e 53 54 41 4c 4c 2e 70 64 66 22 3e 64 6f 63 
+	umentation</a>. 		75 6d 65 6e 74 61 74 69 6f 6e 3c 2f 61 3e 0a 20 
+	 for installatio		20 66 6f 72 20 69 6e 73 74 61 6c 6c 61 74 69 6f 
+	n instructions..		6e 20 69 6e 73 74 72 75 63 74 69 6f 6e 73 2e 0a 
+	  Please do not 		20 20 50 6c 65 61 73 65 20 64 6f 20 6e 6f 74 20 
+	call The Written		63 61 6c 6c 20 54 68 65 20 57 72 69 74 74 65 6e 
+	 Word for suppor		20 57 6f 72 64 20 66 6f 72 20 73 75 70 70 6f 72 
+	t. Email.  <a hr		74 2e 20 45 6d 61 69 6c 0a 20 20 3c 61 20 68 72 
+	ef="mailto:free-		65 66 3d 22 6d 61 69 6c 74 6f 3a 66 72 65 65 2d 
+	support[AT]thewr		73 75 70 70 6f 72 74 5b 41 54 5d 74 68 65 77 72 
+	ittenword.com">f		69 74 74 65 6e 77 6f 72 64 2e 63 6f 6d 22 3e 66 
+	ree-support[AT]t		72 65 65 2d 73 75 70 70 6f 72 74 5b 41 54 5d 74 
+	hewrittenword.co		68 65 77 72 69 74 74 65 6e 77 6f 72 64 2e 63 6f 
+	m</a>.  with que		6d 3c 2f 61 3e 0a 20 20 77 69 74 68 20 71 75 65 
+	stions..</p>.</d		73 74 69 6f 6e 73 2e 0a 3c 2f 70 3e 0a 3c 2f 64 
+	iv>.<div class="		69 76 3e 0a 3c 64 69 76 20 63 6c 61 73 73 3d 22 
+	block">.  <h2 cl		62 6c 6f 63 6b 22 3e 0a 20 20 3c 68 32 20 63 6c 
+	ass="headerline"		61 73 73 3d 22 68 65 61 64 65 72 6c 69 6e 65 22 
+	 id="otherdown">		20 69 64 3d 22 6f 74 68 65 72 64 6f 77 6e 22 3e 
+	Other Downloads<		4f 74 68 65 72 20 44 6f 77 6e 6c 6f 61 64 73 3c 
+	/h2>.<h4>Sample 		2f 68 32 3e 0a 3c 68 34 3e 53 61 6d 70 6c 65 20 
+	Captures</h4>.<p		43 61 70 74 75 72 65 73 3c 2f 68 34 3e 0a 3c 70 
+	>.  A menagerie 		3e 0a 20 20 41 20 6d 65 6e 61 67 65 72 69 65 20 
+	of capture files		6f 66 20 63 61 70 74 75 72 65 20 66 69 6c 65 73 
+	 is available on		20 69 73 20 61 76 61 69 6c 61 62 6c 65 20 6f 6e 
+	 our.  <a href="		20 6f 75 72 0a 20 20 3c 61 20 68 72 65 66 3d 22 
+	../sample/">samp		2e 2e 2f 73 61 6d 70 6c 65 2f 22 3e 73 61 6d 70 
+	le captures</a> 		6c 65 20 63 61 70 74 75 72 65 73 3c 2f 61 3e 20 
+
+
+Command : ./mydump -ra.pcap  tcp | head -n 50
+Output : 
+	File filter is : a.pcap
+	filter is tcp 
+	Capturing Offline
+	filter is : tcp 
+
+	2004-05-13 06:17:07:311224  0:0:1:0:0:0 -> fe:ff:20:0:1:0 type 0x800  len 62
+	65.208.228.223 -> 65.208.228.223 TCP
+	SEQ: 951057939 ACK: 0
+	SRC PORT: 3372 DST PORT: 80 
+	WINDOW SIZE: 8760
+	PAYLOAD SIZE: 21
+	.....p."8.......		13 00 00 00 00 70 02 22 38 c3 0c 00 00 02 04 05 
+
+
+
+	2004-05-13 06:17:08:222534  fe:ff:20:0:1:0 -> 0:0:1:0:0:0 type 0x800  len 62
+	145.254.160.237 -> 145.254.160.237 TCP
+	SEQ: 290218379 ACK: 951057940
+	SRC PORT: 80 DST PORT: 3372 
+	WINDOW SIZE: 5840
+	PAYLOAD SIZE: 21
+	.8...p...[......		8b 38 af fe 14 70 12 16 d0 5b dc 00 00 02 04 05 
+
+
+
+	2004-05-13 06:17:08:222534  0:0:1:0:0:0 -> fe:ff:20:0:1:0 type 0x800  len 54
+	65.208.228.223 -> 65.208.228.223 TCP
+	SEQ: 951057940 ACK: 290218380
+	SRC PORT: 3372 DST PORT: 80 
+	WINDOW SIZE: 9660
+	PAYLOAD SIZE: 15
+	....La.P.%.yd...		af fe 14 11 4c 61 8c 50 10 25 bc 79 64 00 00 00 
+
+
+
+	2004-05-13 06:17:08:222534  0:0:1:0:0:0 -> fe:ff:20:0:1:0 type 0x800  len 533
+	65.208.228.223 -> 65.208.228.223 TCP
+	SEQ: 951057940 ACK: 290218380
+	SRC PORT: 3372 DST PORT: 80 
+	WINDOW SIZE: 9660
+	PAYLOAD SIZE: 494
+	....La.P.%..X..G		af fe 14 11 4c 61 8c 50 18 25 bc a9 58 00 00 47 
+	ET /download.htm		45 54 20 2f 64 6f 77 6e 6c 6f 61 64 2e 68 74 6d 
+	l HTTP/1.1..Host		6c 20 48 54 54 50 2f 31 2e 31 0d 0a 48 6f 73 74 
+	: www.ethereal.c		3a 20 77 77 77 2e 65 74 68 65 72 65 61 6c 2e 63 
+	om..User-Agent: 		6f 6d 0d 0a 55 73 65 72 2d 41 67 65 6e 74 3a 20 
+	Mozilla/5.0 (Win		4d 6f 7a 69 6c 6c 61 2f 35 2e 30 20 28 57 69 6e 
+	dows; U; Windows		64 6f 77 73 3b 20 55 3b 20 57 69 6e 64 6f 77 73 
+	 NT 5.1; en-US; 		20 4e 54 20 35 2e 31 3b 20 65 6e 2d 55 53 3b 20 
+	rv:1.6) Gecko/20		72 76 3a 31 2e 36 29 20 47 65 63 6b 6f 2f 32 30 
+
+
+Command : ./mydump
+Output: 
+	Capturing from Default Interface
+	Interface is : en0
+
+	2016-03-11 20:35:05:934628  a0:99:9b:14:7a:9 -> b8:af:67:63:a3:28 type 0x800  len 73
+	23.92.109.11 -> 23.92.109.11 TCP
+	SEQ: 375984693 ACK: 66815508
+	SRC PORT: 53968 DST PORT: 4070 
+	WINDOW SIZE: 4096
+	PAYLOAD SIZE: 31
+	......../.......		03 fb 86 14 80 18 10 00 2f 0c 00 00 01 01 08 0a 
+
+
+
+	2016-03-11 20:35:05:985257  b8:af:67:63:a3:28 -> a0:99:9b:14:7a:9 type 0x800  len 66
+	172.24.18.17 -> 172.24.18.17 TCP
+	SEQ: 66815508 ACK: 375984700
+	SRC PORT: 4070 DST PORT: 53968 
+	WINDOW SIZE: 34
+	PAYLOAD SIZE: 24
+	.i.<...".V......		16 69 12 3c 80 10 00 22 8e 56 00 00 01 01 08 0a 
+
+
+
+	2016-03-11 20:33:52:985330  a0:99:9b:14:7a:9 -> b8:af:67:63:a3:28 type 0x800  len 501
+	23.92.109.11 -> 23.92.109.11 TCP
+	SEQ: 375984700 ACK: 66815508
+	SRC PORT: 53968 DST PORT: 4070 
+	WINDOW SIZE: 4096
+	PAYLOAD SIZE: 459
+	........p.......		03 fb 86 14 80 18 10 00 70 af 00 00 01 01 08 0a 
+	gi.d.14zS...B99.		67 69 e2 64 92 31 34 7a 53 b7 8c bc 42 39 39 e5 
+	.3,.H1z.....u..o		96 33 2c f7 48 31 7a 92 15 eb 00 a9 75 11 d3 6f 
+	........P.......		f2 09 f0 b7 d4 12 e3 c9 50 17 ae e2 dd a1 7f ae 
+	..&..Q....nO..3.		ae 7f 26 f8 c9 51 bd 19 ef 1a 6e 4f c2 e0 33 12 
+	Mx.P...{.K....k.		4d 78 87 50 b8 b9 d6 7b a7 4b 9a 9b a2 d0 6b c1 
+	.O..z..........x		95 4f e3 86 7a e9 01 07 18 06 8d 09 82 01 ea 78 
+	..+...f..;.....|		8b d1 2b 9a ad c5 66 ab 09 3b a6 04 fb 10 ae 7c 
+	.^JC...p..:]....		a5 5e 4a 43 15 ce 8b 70 c7 9d 3a 5d 9e d2 12 9b 
+	...>i..........K		19 17 b0 3e 69 8a e4 82 f8 81 c7 f3 db c0 d5 4b 
+	o[.F?<t.|S.$..x.		6f 5b a1 46 3f 3c 74 cf 7c 53 fc 24 83 9b 78 da 
+	..@u.(..../Q....		b4 98 40 75 a5 28 a9 c6 8a cd 2f 51 c5 a3 ff 17 
+	.#q.&..'......H.		fb 23 71 85 26 a6 d6 27 1b 1e d2 d1 df d9 48 f0 
+	'+.D.,..8ND..DL.		27 2b 03 44 f4 2c 01 9b 38 4e 44 1d d9 44 4c e1 
+	'..ug..P.!.g"..p		27 92 a5 75 67 cd 11 50 0d 21 eb 67 22 af 00 70 
+	U4<...3D..O...U.		55 34 3c eb 8c 05 33 44 dc fd 4f 94 ee ac 55 a3 
+	[...5...'..y..DV		5b ce b3 00 35 ea dc ed 27 f2 fc 79 1d 18 44 56 
+	..Ci....ug|.x..O		c6 bd 43 69 03 be 9f e9 75 67 7c 0c 78 ad 98 4f 
+	.W..$...V,....&.		17 57 88 ea 24 d7 e6 db 56 2c 88 d6 c3 a3 26 fe 
+	..Wj..I,-j0...<.		ad cf 57 6a ff 84 49 2c 2d 6a 30 8f 94 b3 3c 80 
+	ew..8...p...}._.		65 77 c5 8c 38 fc 9c e9 70 17 93 98 7d 93 5f cd 
+	......GG........		06 1f d8 18 f0 c5 47 47 13 14 d9 88 b7 cf 8e 98 
+	..sL#.-SX..o....		96 fa 73 4c 23 fc 2d 53 58 d4 f8 6f ba 91 ab b3 
+	.F.4d..OE.x...(.		11 46 8f 34 64 a6 e6 4f 45 e9 78 f2 ae e8 28 14 
+	kR......:s4.r..=		6b 52 c2 fb f1 15 d4 b7 3a 73 34 8e 72 f3 95 3d 
+	.7...`.}.|ui....		c0 37 82 86 ae 60 cf 7d 13 7c 75 69 90 1c f3 e3 
+	..8>N.p.......2.		d5 03 38 3e 4e a8 70 f7 e4 a9 7f 17 d6 a5 32 eb 
+	...y..:..A....=.		c1 c6 b8 79 05 c4 3a 2e ca 41 7f d7 80 fd 3d b3 
+
+
+
+	2016-03-11 20:35:05:997155  b8:af:67:63:a3:28 -> a0:99:9b:14:7a:9 type 0x800  len 66
+	172.24.18.17 -> 172.24.18.17 TCP
+	SEQ: 66815508 ACK: 375985135
+	SRC PORT: 4070 DST PORT: 53968 
+	WINDOW SIZE: 34
+	PAYLOAD SIZE: 24
+	.i.....".o......		16 69 13 ef 80 10 00 22 8c 6f 00 00 01 01 08 0a 
+
+
+
