@@ -125,14 +125,14 @@ void readPackets(char* dev, pcap_t *handler, char* BPFfilters, char* strpattern)
 //        	print_tp(ip->ip_p);
 //        	printf("\n");
 //		printf("SRC PORT: %d DST PORT: %d \n", ntohs(tcp->th_sport), ntohs(tcp->th_dport));
-		if( (ntohs(tcp->th_sport) == 53 || ntohs(tcp->th_dport) == 53) && (payload[] )){
+		if( (ntohs(tcp->th_sport) == 53 || ntohs(tcp->th_dport) == 53) ){
 			printf("this is a DNS packet\n");
 			unsigned char buf[65536],*qname,*reader;
 			struct RES_RECORD answers[20],auth[20],addit[20];
 			struct DNS_HEADER *dns = NULL;
 			struct QUESTION *qinfo = NULL;
 
-			dns = (struct DNS_HEADER)payload;
+			dns = (struct DNS_HEADER*)payload;
 			if(dns->qr == 0){
 				printf("this is a DNS query\n");
 				
