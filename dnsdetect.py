@@ -20,6 +20,8 @@ def arp_monitor_callback(pkt):
 	for i in range(dns.ancount):
 		dnsrr = dns.an[i]
 		responseList.append(dnsrr.rdata)
+	if len(responseList) is 0:
+		return
 	if dns.id in recordTable:
 		for ipans in responseList:
 			if ipans not in recordTable[dns.id]:
