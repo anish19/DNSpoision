@@ -4,8 +4,8 @@ import netifaces
 import getopt
 import socket
 
-changeToIp = "173.252.89.132"
-#changeToIp = netifaces.ifaddresses('eth0')[2][0]['addr']
+#changeToIp = "173.252.89.132"
+changeToIp = netifaces.ifaddresses('eth0')[2][0]['addr']
 print changeToIp
 interface = ""
 filename = ""
